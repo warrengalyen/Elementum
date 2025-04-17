@@ -1,5 +1,5 @@
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#ifndef MAIN_H
+#define MAIN_H
 #include <stdint.h>
 typedef uint8_t     U8;
 typedef int8_t      I8;
@@ -34,4 +34,4 @@ typedef double      F64;
 // __attribute__((import_module("env"), import_name("sin"))) double env_sin(double);
 // __attribute__((import_module("env"), import_name("atan2"))) double env_atan2(double, double);
 
-#endif 
+#endif  /* MAIN_H */

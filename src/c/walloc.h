@@ -8,4 +8,4 @@ typedef __UINT8_TYPE__ U8;
 void *malloc(size_t size);
 void free(void *ptr);
 
-#endif
+#endif  /* WALLOC_H */
