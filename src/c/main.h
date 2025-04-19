@@ -29,9 +29,9 @@ typedef double      F64;
 #define LORDIR (randomBool() ? -1 : 1)
 
 // imported functions
-// __attribute__((import_module("env"), import_name("log"))) void env_log();
-// __attribute__((import_module("env"), import_name("cos"))) double env_cos(double);
-// __attribute__((import_module("env"), import_name("sin"))) double env_sin(double);
-// __attribute__((import_module("env"), import_name("atan2"))) double env_atan2(double, double);
+__attribute__((import_module("env"), import_name("log"))) void env_log();
+__attribute__((import_module("env"), import_name("cos"))) double env_cos(double);
+__attribute__((import_module("env"), import_name("sin"))) double env_sin(double);
+__attribute__((import_module("env"), import_name("atan2"))) double env_atan2(double, double);
 
 #endif  /* MAIN_H */
