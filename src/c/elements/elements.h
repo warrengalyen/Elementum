@@ -47,7 +47,7 @@
     MACRO(POLONIUM, polonium) \
     MACRO(PLUTONIUM, plutonium) \
     MACRO(PUMP, pump) \
-    MACRO(CONVEYER, conveyer) \
+    MACRO(CONVEYOR, conveyor) \
     MACRO(PISTON, piston) \
     MACRO(FUNGUS, fungus) \
     MACRO(FIREWORK, firework) \
