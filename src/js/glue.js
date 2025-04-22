@@ -383,7 +383,7 @@ window.constructUI = (renderList) => {
     elementumNode.on('mouseexit', () => document.body.style.cursor = 'default');
     elementumNode.on('mousedown', () => window.open('https://github.com/warrengalyen/Elementum/'));
     renderList.push(elementumNode);
-    const mechanikaDevNode = new TextNode('mechanikadesign.com', scaleF, new Vec2(right - 8, bottom + 4 * scaleF), 'right');
+    const mechanikaDevNode = new TextNode('mechanika design', scaleF, new Vec2(right - 8, bottom + 4 * scaleF), 'right');
     mechanikaDevNode.on('mouseenter', () => document.body.style.cursor = 'pointer');
     mechanikaDevNode.on('mouseexit', () => document.body.style.cursor = 'default');
     mechanikaDevNode.on('mousedown', () => window.open('https://mechanikadesign.com/'));
