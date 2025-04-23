@@ -9,7 +9,8 @@ export const char *enumToString[] = {
 #define GENERATE_STRING(UPPER, LOWER) #UPPER,
     FOREACH_ELEMENTTYPE(GENERATE_STRING)
 #undef GENERATE_STRING
-        NULL};
+        NULL
+};
 
 export void freeCell(Cell *c) {
     if (c && c->el) {
@@ -225,49 +226,49 @@ void explosionRay(U16 x0, U16 y0, I16 x1, I16 y1, U8 power) {
                 ElementInfo *info = &elementLookup[type];
                 U8 resistance = 1;
                 switch (info->state) {
-                default:
-                    curPower -= resistance;
-                    break;
-                case s_UNKNOWN:
-                case s_LIQUID:
-                case s_SOLID:
-                    resistance = elementLookup[source->el->type].explosionResistance;
-                    if (source->el->scorched)
-                        resistance /= 2;
-                    if (resistance >= curPower && type != DEBRIS)
-                        curPower = 0;
-                    else if (type != DEBRIS)
+                    default:
                         curPower -= resistance;
-                    if (curPower) {
-                        if (info->temp.flammable && type != GUNPOWDER) {
-                            source->el->r0 = (randomU8() % info->temp.burnTime) + 1;
-                        } else {
-                            if (!(type == COBBLESTONE && source->el->r0 == 1) && type != UNBREAKABLECLONER &&
-                                type != DEBRIS) {
-                                freeCell(source);
-                                if (!info->isStatic && randomBool()) {
-                                    spawnElement(source, DEBRIS);
-                                    source->el->r0 = type;
+                        break;
+                    case s_UNKNOWN:
+                    case s_LIQUID:
+                    case s_SOLID:
+                        resistance = elementLookup[source->el->type].explosionResistance;
+                        if (source->el->scorched)
+                            resistance /= 2;
+                        if (resistance >= curPower && type != DEBRIS)
+                            curPower = 0;
+                        else if (type != DEBRIS)
+                            curPower -= resistance;
+                        if (curPower) {
+                            if (info->temp.flammable && type != GUNPOWDER) {
+                                source->el->r0 = (randomU8() % info->temp.burnTime) + 1;
+                            } else {
+                                if (!(type == COBBLESTONE && source->el->r0 == 1) && type != UNBREAKABLECLONER &&
+                                    type != DEBRIS) {
+                                    freeCell(source);
+                                    if (!info->isStatic && randomBool()) {
+                                        spawnElement(source, DEBRIS);
+                                        source->el->r0 = type;
+                                    }
+                                }
+                                switch (type) {
+                                    case STONE:
+                                        if (randEveryU8(4)) {
+                                            spawnElement(source, COBBLESTONE);
+                                            source->el->r0 = 1;
+                                        }
+                                        break;
+                                    case WATER:
+                                        spawnElement(source, STEAM);
+                                        break;
+                                    case BATTERY:
+                                        spawnElement(source, LIGHTNING);
+                                        break;
                                 }
                             }
-                            switch (type) {
-                            case STONE:
-                                if (randEveryU8(4)) {
-                                    spawnElement(source, COBBLESTONE);
-                                    source->el->r0 = 1;
-                                }
-                                break;
-                            case WATER:
-                                spawnElement(source, STEAM);
-                                break;
-                            case BATTERY:
-                                spawnElement(source, LIGHTNING);
-                                break;
-                            }
-                        }
-                    } else
-                        source->el->scorched = 1;
-                    break;
+                        } else
+                            source->el->scorched = 1;
+                        break;
                 }
             } else {
                 curPower -= 1;
@@ -299,7 +300,7 @@ void explosionRay(U16 x0, U16 y0, I16 x1, I16 y1, U8 power) {
 
 U32 explosionPower = 0;
 
-export U32 getFrameExplosionPower() {
+export U32 getFrameExplosionPower(void) {
     return explosionPower;
 }
 
@@ -409,13 +410,13 @@ _Bool default_attempt(Element *el, Cell *cell, Cell *target) {
         return 1;
     } else if (target)
         switch (targetInfo->state) {
-        case s_LIQUID:
-            if (!randEveryU8(4))
-                return 0;
-        case s_GAS:
-        case s_PLASMA:
-            swapElements(cell, target);
-            return 1;
+            case s_LIQUID:
+                if (!randEveryU8(4))
+                    return 0;
+            case s_GAS:
+            case s_PLASMA:
+                swapElements(cell, target);
+                return 1;
         };
     return 0;
 }
