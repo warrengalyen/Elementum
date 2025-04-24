@@ -41,8 +41,13 @@ export void applyPaint(U16 mx, U16 my, ElementType type, U8 areaOfEffect) {
                 continue;
 
             Cell *target = getCell(px, py);
-            if (getType(target) == EMPTY)
+            if (getType(target) == EMPTY) {
                 spawnElement(target, type);
+                if (type == ICE)
+                    fluid.density[target->fluidInd] = -5.0f;
+                else if (type == SNOW)
+                    fluid.density[target->fluidInd] = -2.8f;
+            }
         }
     }
 }
