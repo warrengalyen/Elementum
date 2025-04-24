@@ -31,7 +31,10 @@ _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
             spawnElement(target, LIGHTNING);
             el->r0 += 1;
             return 1;
-
+        case SAND:
+            freeCell(target);
+            spawnElement(target, GLASS);
+            break;
         case BATTERY:
             freeCell(target);
             explode(target->x, target->y, 40);
