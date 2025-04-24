@@ -53,7 +53,7 @@ _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
                 return 0;
             }
         case POLONIUM:
-            fluid->density[cell->fluidInd] += 5.5f;
+            fluid.density[cell->fluidInd] += 5.5f;
             break;
     }
 #undef REPLACEWITH
