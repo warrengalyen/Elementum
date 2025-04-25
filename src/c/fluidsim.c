@@ -1,16 +1,8 @@
+#include "main.h"
 #include "fluidsim.h"
 #include "elements/elements.h"
-#include "main.h"
 #include "walloc.h"
 
-
-void *memcpy(void *dest, const void *src, unsigned long s) {
-  char *csrc = (char *)src;
-  char *cdest = (char *)dest;
-  while (s-- > 0)
-    cdest[s] = csrc[s];
-  return dest;
-}
 
 void set_bnd(U8 b, F32 *x) {
   for (int i = 1; i < N - 1; i++) {

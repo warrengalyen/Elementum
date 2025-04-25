@@ -1,8 +1,6 @@
 #ifndef FLUIDSIM_H
 #define FLUIDSIM_H
 
-#include "main.h"
-
 #define N 75
 #define ITER 16
 #define IX(x, y) (MAX(MIN(x, N - 1), 0) + (MAX(MIN(y, N - 1), 0) * N))

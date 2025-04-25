@@ -1,10 +1,10 @@
 #include "main.h"
+#include "fluidsim.h"
 #include "elements/elements.h"
 #include "elements/subatomics.h"
-#include "fluidsim.h"
+#include "walloc.h"
 #include "random.h"
 #include "scene.h"
-#include "walloc.h"
 
 
 export U32 *imageData;
@@ -344,4 +344,12 @@ export void draw() {
         else
             imageData[ind] |= c[node->waveLength].value;
     }
+}
+
+void *memcpy(void *dest, const void *src, unsigned long s) {
+    char *csrc = (char *)src;
+    char *cdest = (char *)dest;
+    while (s-- > 0)
+        cdest[s] = csrc[s];
+    return dest;
 }

@@ -1,10 +1,11 @@
+#include "main.h"
+#include "fluidsim.h"
 #include "elements/elements.h"
 #include "elements/subatomics.h"
-#include "fluidsim.h"
-#include "main.h"
 #include "api.h"
 #include "walloc.h"
 #include "random.h"
+
 
 export F32 getTemp(U16 x, U16 y) {
     return cells[y * width + x].temperature;
@@ -80,88 +81,74 @@ export void eraseArea(U16 mx, U16 my, U8 areaOfEffect) {
     }
 }
 
-export U32 exportByteLen(void) {
-    return sizeof(IOCanvas) + width * height * sizeof(IOCell);
-}
+const char *magic = "ELEMENTUM";
 
-export IOCanvas* exportData(void) {
+export IOCanvas *exportData(void) {
     U32 len = width * height;
-    IOCanvas *canvas = malloc(sizeof(IOCanvas) + len * sizeof(IOCell));
-    canvas->magic = 0x8008;
-    canvas->width = width;
-    canvas->height = height;
+    U32 nonEmptyCells = 0;
+    for (U32 i = 0; i < len; ++i) {
+        if (cells[i].el)
+            nonEmptyCells += 1;
+    }
+
+    IOCanvas *canvas = malloc(sizeof(IOCanvas) + nonEmptyCells * sizeof(IOCell));
+    memcpy(canvas->magic, magic, 10);
+    canvas->size = width / 75;
+    canvas->cellLength = nonEmptyCells;
+    canvas->cellSize = sizeof(IOCell);
+    canvas->cellArrStart = sizeof(IOCanvas);
 
     U32 i = len;
-    while (i --> 0) {
-        canvas->cells[i].nElectrons = 0;
-        canvas->cells[i].nProtons = 0;
-        canvas->cells[i].nPhotons = 0;
+    U32 ci = 0;
+    while (i-- > 0) {
         if (cells[i].el) {
-            canvas->cells[i].el.type = cells[i].el->type;
-            canvas->cells[i].el.rv = cells[i].el->rv;
-            canvas->cells[i].el.r0 = cells[i].el->r0;
-            canvas->cells[i].el.color = cells[i].el->color;
-            canvas->cells[i].el.halted = cells[i].el->halted;
-            canvas->cells[i].el.electricityState = cells[i].el->electricityState;
-            canvas->cells[i].el.sbpx = cells[i].el->sbpx;
-            canvas->cells[i].el.sbpy = cells[i].el->sbpy;
-        } else {
-            canvas->cells[i].el.type = 0;
-            canvas->cells[i].el.rv = 0;
-            canvas->cells[i].el.r0 = 0;
-            canvas->cells[i].el.color = 0;
-            canvas->cells[i].el.halted = 0;
-            canvas->cells[i].el.electricityState = 0;
-            canvas->cells[i].el.sbpx = 0;
-            canvas->cells[i].el.sbpy = 0;
+            canvas->cells[ci].index = i;
+            canvas->cells[ci].el.type = cells[i].el->type;
+            canvas->cells[ci].el.rv = cells[i].el->rv;
+            canvas->cells[ci].el.r0 = cells[i].el->r0;
+            canvas->cells[ci].el.color = cells[i].el->color;
+            canvas->cells[ci].el.halted = cells[i].el->halted;
+            canvas->cells[ci].el.electricityState = cells[i].el->electricityState;
+            canvas->cells[ci].el.sbpx = cells[i].el->sbpx;
+            canvas->cells[ci].el.sbpy = cells[i].el->sbpy;
+            ci += 1;
         }
     }
 
     U16 fi = N * N;
-    while (fi --> 0) {
+    while (fi-- > 0) {
         canvas->fvx[fi] = fluid.vx[fi];
         canvas->fvy[fi] = fluid.vy[fi];
         canvas->tmp[fi] = fluid.density[fi];
     }
 
-    if (rootSA) {
-        for (Subatomic *node = rootSA; node->next; node = node->next) {
-            U32 ind = (U16)node->y * width + (U16)node->x;
-            switch (node->waveLength) {
-                case 0xff: canvas->cells[ind].nElectrons += 1; break;
-                case 0xfe: canvas->cells[ind].nProtons += 1; break;
-                default: canvas->cells[ind].nPhotons += 1; break;
-            }
-        }
-    }
-
     return canvas;
 }
 
-export void importData(IOCanvas *canvas) {
-    setSize(canvas->width, canvas->height, 0);
-    U32 i = width * height;
-    while (i-- > 0) {
-        if (cells[i].el)
-            freeCell(&cells[i]);
+export _Bool importData(IOCanvas *canvas) {
+    if (canvas->size == 0 || canvas->size > 20)
+        return 0;
+    for (U8 i = 0; i < 8; ++i) {
+        if (magic[i] != canvas->magic[i])
+            return 0;
+    }
+    for (U32 i = 0; i < canvas->cellLength; ++i) {
+        if (canvas->cells[i].el.type <= EMPTY || canvas->cells[i].el.type >= type_length)
+            return 0;
+    }
 
-        if (canvas->cells[i].el.type) {
-            spawnElement(&cells[i], canvas->cells[i].el.type);
-            cells[i].el->rv = canvas->cells[i].el.rv;
-            cells[i].el->r0 = canvas->cells[i].el.r0;
-            cells[i].el->color = canvas->cells[i].el.color;
-            cells[i].el->halted = canvas->cells[i].el.halted;
-            cells[i].el->electricityState = canvas->cells[i].el.electricityState;
-            cells[i].el->sbpx = canvas->cells[i].el.sbpx;
-            cells[i].el->sbpy = canvas->cells[i].el.sbpy;
-        }
+    setSize(canvas->size * 75, canvas->size * 75, 1);
 
-        while (canvas->cells[i].nElectrons-- > 0)
-            createSubatomic(cells[i].x, cells[i].y, 0xff);
-        while (canvas->cells[i].nProtons-- > 0)
-            createSubatomic(cells[i].x, cells[i].y, 0xfe);
-        while (canvas->cells[i].nPhotons-- > 0)
-            createSubatomic(cells[i].x, cells[i].y, randomU8() % 7);
+    for (U32 i = 0; i < canvas->cellLength; ++i) {
+        U32 ti = canvas->cells[i].index;
+        spawnElement(&cells[ti], canvas->cells[i].el.type);
+        cells[ti].el->rv = canvas->cells[i].el.rv;
+        cells[ti].el->r0 = canvas->cells[i].el.r0;
+        cells[ti].el->color = canvas->cells[i].el.color;
+        cells[ti].el->halted = canvas->cells[i].el.halted;
+        cells[ti].el->electricityState = canvas->cells[i].el.electricityState;
+        cells[ti].el->sbpx = canvas->cells[i].el.sbpx;
+        cells[ti].el->sbpy = canvas->cells[i].el.sbpy;
     }
 
     U16 fi = N * N;
@@ -170,4 +157,6 @@ export void importData(IOCanvas *canvas) {
         fluid.vy[fi] = canvas->fvy[fi];
         fluid.density[fi] = canvas->tmp[fi];
     }
+    
+    return 1;
 }

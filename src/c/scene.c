@@ -1,8 +1,8 @@
-#include "scene.h"
 #include "elements/elements.h"
-#include "fluidsim.h"
 #include "main.h"
 #include "random.h"
+#include "scene.h"
+#include "fluidsim.h"
 
 void void_scene(void) {
     U32 i = width * height;
