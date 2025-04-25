@@ -38,7 +38,7 @@ export void changeScene(U8 scene) {
     scenes[scene ? scene - 1 : randomU8() % SCENES]();
 }
 
-export void setSize(U16 w, U16 h) {
+export void setSize(U16 w, U16 h, _Bool voidScene) {
     if (width) {
         U32 i = width * height;
         while (i-- > 0) {
@@ -105,7 +105,7 @@ export void setSize(U16 w, U16 h) {
         }
     }
 
-    changeScene(0);
+    changeScene(voidScene ? 1 : 0);
 }
 
 void tickCell(Cell *cell) {
