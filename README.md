@@ -27,9 +27,11 @@ The game can be played using the following keyboard shortcuts:
 
 ### Game Controls
 - `Space` - Pause/Resume simulation
-- `S` - Step simulation (advance one frame)
+- `T` - Step simulation (advance one frame)
 - `R` - Reset simulation
 - `C` - Open resize menu
+- `S` - Save current state (.elem file)
+- `O` - Load saved state (.elem file)
 
 ### Scene Selection
 - `1` through `5` - Change to different scenes
