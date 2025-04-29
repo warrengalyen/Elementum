@@ -6,6 +6,8 @@ class EventHandler {
 
     isPhone = false;
 
+    shiftKeyPressed = false;
+
     constructor() {
         window.addEventListener('contextmenu', e => e.preventDefault());
         window.addEventListener('mousemove', e => {
@@ -97,6 +99,9 @@ class EventHandler {
                 }
             }
         });
+
+        window.addEventListener('keydown', e => e.key.toLowerCase() == 'shift' && (this.shiftKeyPressed = true));
+        window.addEventListener('keyup', e => e.key.toLowerCase() == 'shift' && (this.shiftKeyPressed = false));
 
         window.addEventListener('wheel', e => {
             renderList[Element.getElementIndexById('tool_areaOfEffect')].onmousedown({ button: e.deltaY < 0 ? 0 : 2 });
