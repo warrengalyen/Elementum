@@ -6,7 +6,6 @@
 #include "walloc.h"
 #include "random.h"
 
-
 export F32 getTemp(U16 x, U16 y) {
     return cells[y * width + x].temperature;
 }
@@ -101,7 +100,7 @@ export IOCanvas *exportData(void) {
     U32 i = len;
     U32 ci = 0;
     while (i-- > 0) {
-        if (cells[i].el) {
+        if (cells[i].el && cells[i].el->type > EMPTY) {
             canvas->cells[ci].index = i;
             canvas->cells[ci].el.type = cells[i].el->type;
             canvas->cells[ci].el.rv = cells[i].el->rv;
@@ -133,7 +132,7 @@ export _Bool importData(IOCanvas *canvas) {
             return 0;
     }
     for (U32 i = 0; i < canvas->cellLength; ++i) {
-        if (canvas->cells[i].el.type <= EMPTY || canvas->cells[i].el.type >= type_length)
+        if (canvas->cells[i].el.type >= type_length)
             return 0;
     }
 
@@ -157,6 +156,6 @@ export _Bool importData(IOCanvas *canvas) {
         fluid.vy[fi] = canvas->fvy[fi];
         fluid.density[fi] = canvas->tmp[fi];
     }
-    
+
     return 1;
 }

@@ -43,6 +43,7 @@ function importData(compressed) {
             canvas.width, canvas.height
         );
     } catch (e) {
+        console.error(e);
         console.error('Invalid File!');
         return false;
     }
